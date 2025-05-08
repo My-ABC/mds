@@ -142,8 +142,8 @@ class Lexer:
                     self.code,
                     self.context,
                     "invalid decimal literal",
-                    Pos(1, len(self.code)-2),
-                    Pos(1, len(self.code)-1)
+                    Pos(1, self.pos.col-2),
+                    Pos(1, self.pos.col-1)
                 )
             if number[-1] == ".":
                 number = number + "0"

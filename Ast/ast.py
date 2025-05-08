@@ -61,7 +61,16 @@ class Parser:
         # 处理括号
         elif tok.type == TT_LPAREN:
             self.advance()
+            
+            # 检查是否为空括号 ()
+            if self.current_tok and self.current_tok.type == TT_RPAREN:
+                self.advance()
+                # 创建值为0的数字节点，位置信息使用原括号位置
+                return NumberNode(Token(TT_INT, 0))
+            
+            # 非空括号的正常处理
             expr_node = self.expr()
+            
             self.advance()
             return expr_node
 

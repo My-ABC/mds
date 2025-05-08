@@ -13,39 +13,46 @@ class Lexer:
         token = []
         self.lparan = 0
         self.op_v = False
+        self.n_or_p_v = True
         while self.pos.col < len(self.code):
             self.now_char = self.code[self.pos.col] \
                 if self.pos.col < len(self.code) else None
             if self.now_char == ' ' or self.now_char == '\t':
                 self.pos.advince()
-            elif self.now_char in (list(DIGITS) + ["."]):
+            elif (self.now_char in (list(DIGITS) + ["."])) and self.n_or_p_v:
                 res = self.make_number()
                 if isinstance(res, Token):
                     token.append(res)
                 else:
                     return [],res
                 self.op_v = True
+                self.n_or_p_v = False
             elif self.now_char == "+":
                 token.append(Token(TT_PLUS))
                 self.pos.advince()
                 self.op_v = False
+                self.n_or_p_v = True
             elif self.now_char == "-":
                 token.append(Token(TT_MINUS))
                 self.pos.advince()
                 self.op_v = False
+                self.n_or_p_v = True
             elif self.now_char == "*" and self.op_v:
                 token.append(Token(TT_MUL))
                 self.pos.advince()
                 self.op_v = False
+                self.n_or_p_v = True
             elif self.now_char == "/" and self.op_v:
                 token.append(Token(TT_DIV))
                 self.pos.advince()
                 self.op_v = False
+                self.n_or_p_v = True
             elif self.now_char == "^" and self.op_v:
                 token.append(Token(TT_POW))
                 self.pos.advince()
                 self.op_v = False
-            elif self.now_char == "(":
+                self.n_or_p_v = True
+            elif self.now_char == "(" and self.n_or_p_v:
                 token.append(Token(TT_LPAREN))
                 self.lparan += 1
                 self.pos.advince()
@@ -60,6 +67,8 @@ class Lexer:
                         Pos(1, self.pos.col-1),
                         self.pos
                     )
+                self.op_v = True
+                self.n_or_p_v = False
                 self.pos.advince()
             else:
                 return [], SxError(
